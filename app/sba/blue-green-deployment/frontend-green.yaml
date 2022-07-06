@@ -19,7 +19,7 @@ kind: Deployment
 metadata:
   labels:
     app: frontend
-    release: v1
+    release: v2
   name: frontend
 spec:
   replicas: 1
@@ -30,7 +30,7 @@ spec:
     metadata:
       labels:
         app: frontend
-        release: v1
+        release: v2
     spec:
       topologySpreadConstraints:
       - maxSkew: 1
@@ -40,7 +40,7 @@ spec:
           matchLabels:
             app: frontend
       containers:
-      - image: jkplayground/smartbank-frontend-module:nginx-v1.0.0
+      - image: jkplayground/smartbank-frontend-module:nginx-green-v1.0.0
         name: frontend
         imagePullPolicy: Always
         ports:
