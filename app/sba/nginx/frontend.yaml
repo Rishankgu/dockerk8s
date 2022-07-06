@@ -1,23 +1,10 @@
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: frontend
-  name: frontend
-spec:
-  ports:
-  - name: 80-80
-    port: 80
-    protocol: TCP
-    targetPort: 80
-  selector:
-    app: frontend
-  type: ClusterIP
----  
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  labels:
+    app: frontend
+    release: v1
+  name: frontend-v1
 spec:
   replicas: 1
   selector:
@@ -27,6 +14,7 @@ spec:
     metadata:
       labels:
         app: frontend
+        release: v1
     spec:
       topologySpreadConstraints:
       - maxSkew: 1
@@ -34,9 +22,9 @@ spec:
         whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
-            app: one-pod-per-zone
+            app: frontend
       containers:
-      - image: rishank01/smart-bank-front:v1
+      - image: jkplayground/smartbank-frontend-module:nginx-v1.0.0
         name: frontend
         imagePullPolicy: Always
         ports:
