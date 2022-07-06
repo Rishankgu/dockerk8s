@@ -6,7 +6,7 @@ metadata:
   name: apiserver
 spec:
   ports:
-  - name: 80-8080
+  - name: http
     port: 80
     protocol: TCP
     targetPort: 8080
@@ -37,7 +37,7 @@ spec:
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: DoNotSchedulegit
+        whenUnsatisfiable: DoNotSchedule
         labelSelector:
           matchLabels:
             app: one-pod-per-zone
@@ -49,9 +49,8 @@ spec:
               - key: app
                 operator: In
                 values:
-                - sba-frontend
+                - frontend
             topologyKey: "kubernetes.io/hostname"
-        
       volumes: 
       - name: elastic-apm-agent 
         emptyDir: {}    
@@ -63,7 +62,7 @@ spec:
           name: elastic-apm-agent 
         command: ['cp', '-v', '/usr/agent/elastic-apm-agent.jar', '/elastic/apm/agent']     
       containers:
-      - image: rishank01/smartbank:nginx
+      - image: rishank01/smart-bank-apiserver:v1
         name: sba-apiserver
         imagePullPolicy: Always
         volumeMounts: 
@@ -72,8 +71,12 @@ spec:
         env:
           - name: spring.datasource.url
             value: jdbc:postgresql://postgres:5432/app
+          - name: spring.datasource.username
+            value: postgres
+          - name: spring.datasource.password
+            value: postgres
           - name: spring.application.name
-            value: apiserver-rishank
+            value: apiserver
           - name: server.port
             value: "8080"
           - name: ELASTIC_APM_SERVER_URL 

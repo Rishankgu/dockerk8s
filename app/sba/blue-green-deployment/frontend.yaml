@@ -1,34 +1,43 @@
-
 apiVersion: v1
 kind: Service
 metadata:
-  name: sba-frontend
+  labels:
+    app: frontend
+  name: frontend
 spec:
-  type: ClusterIP
   ports:
-    - name: http
-      port: 80
-      targetPort: 80
+  - name: 80-80
+    port: 80
+    protocol: TCP
+    targetPort: 80
   selector:
-    app: sba-frontend
----
+    app: frontend
+  type: ClusterIP
+---  
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sba-frontend
+  name: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sba-frontend
+      app: frontend
   template:
     metadata:
       labels:
-        app: sba-frontend
+        app: frontend
     spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: one-pod-per-zone
       containers:
-      - image: rishank01/smartbank:nginx
-        name: sba-frontend
+      - image: rishank01/smart-bank-front:v1
+        name: frontend
         imagePullPolicy: Always
         ports:
         - containerPort: 80
