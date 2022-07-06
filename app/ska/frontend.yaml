@@ -5,22 +5,21 @@ metadata:
     app: frontend
   name: frontend
 spec:
+  type: ClusterIP
   ports:
-  - name: 80-80
-    port: 80
-    protocol: TCP
-    targetPort: 80
+    - name: http
+      port: 80
+      targetPort: 80
   selector:
     app: frontend
-  type: ClusterIP
----  
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
 spec:
   replicas: 1
-  selector:
+  selector: 
     matchLabels:
       app: frontend
   template:
@@ -28,15 +27,8 @@ spec:
       labels:
         app: frontend
     spec:
-      topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app: one-pod-per-zone
       containers:
-      - image: rishank01/smartbank:nginx
+      - image: jkplayground/smartbank-frontend-module:nginx-v1.0.0
         name: frontend
         imagePullPolicy: Always
         ports:
@@ -65,7 +57,9 @@ data:
             listen 80;
             listen [::]:80 default_server;
             server_name frontend;
+
             default_type application/octet-stream;
+
             gzip on;
             gzip_http_version 1.1;
             gzip_disable      "MSIE [1-6]\.";
@@ -74,8 +68,11 @@ data:
             gzip_proxied      expired no-cache no-store private auth;
             gzip_types        text/plain text/css application/json application/javascript application/x-javascript text/xml application/xml application/xml+rss text/javascript;
             gzip_comp_level   9;
+
             root /usr/share/nginx/html;
+
             index index.html index.htm;
+
             location ^~ /ccuser/ {
               proxy_pass http://apiserver;
               proxy_set_header Upgrade $http_upgrade;
