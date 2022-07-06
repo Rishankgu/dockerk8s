@@ -5,13 +5,14 @@ metadata:
     app: postgres
   name: postgres
 spec:
-  type: ClusterIP
   ports:
-    - name: http
-      port: 5432
-      targetPort: 5432
+  - name: 5432-5432
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
   selector:
     app: postgres
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -24,7 +25,6 @@ spec:
   selector:
     matchLabels:
       app: postgres
-  strategy: {}
   template:
     metadata:
       labels:
@@ -33,7 +33,6 @@ spec:
       containers:
       - image: postgres
         name: postgres
-        resources: {}
         env:
           - name: POSTGRES_USER
             value: postgres
@@ -41,4 +40,4 @@ spec:
             value: postgres
           - name: POSTGRES_DB
             value: app
-status: {}
+  
