@@ -36,7 +36,7 @@ spec:
           matchLabels:
             app: one-pod-per-zone
       containers:
-      - image: rishank01/smartbank:nginx
+      - image: rishank01/smart-bank-front:v1
         name: frontend
         imagePullPolicy: Always
         ports:
